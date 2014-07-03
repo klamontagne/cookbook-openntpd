@@ -24,6 +24,17 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+package 'ntp' do
+  action :purge
+  notifies :run, 'execute[openntpd reload apparmor]', :immediately
+end
+
+execute 'openntpd reload apparmor' do
+  action :nothing
+  command 'test -x /etc/init.d/apparmor && /etc/init.d/apparmor reload'
+  only_if { node.platform == 'ubuntu' && node.platform_version >= '12.04'}
+end
+
 package 'openntpd' do
   action :install
 end
