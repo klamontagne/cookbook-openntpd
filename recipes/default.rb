@@ -24,6 +24,17 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+execute 'forget ntpd apparmor profile' do
+  action :run
+  command 'apparmor_parser -R /etc/apparmor.d/usr.sbin.ntpd'
+  only_if { node.platform == 'ubuntu' && node.platform_version >= '12.04'}
+  only_if { File::exists? '/etc/apparmor.d/usr.sbin.ntpd' }
+end
+
+package 'ntp' do
+  action :purge
+end
+
 package 'openntpd' do
   action :install
 end
